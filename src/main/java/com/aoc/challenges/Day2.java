@@ -12,7 +12,62 @@ import java.util.stream.IntStream;
 public class Day2 {
 
   public static void main(String[] args) {
-    System.out.println(firstChallengePart());
+//    System.out.println(firstChallengePart());
+    System.out.println(secondChallengePart());
+  }
+
+  private static int secondChallengePart() {
+
+
+    return readFile()
+        .stream()
+        .mapToInt(report -> Arrays
+            .stream(report)
+            .mapToInt(reportLevels -> {
+                  System.out.println(Arrays.toString(reportLevels));
+                  List<Integer> unsafetyLevel = new ArrayList<>();
+                  int safetyReport = IntStream
+                      .range(0, reportLevels.length - 1)
+                      .map(indexLevel -> {
+                        Integer level = reportLevels[indexLevel];
+                        Integer previousLevel = indexLevel == 0 ? level : reportLevels[indexLevel - 1];
+                        Integer nextLevel = reportLevels[indexLevel + 1];
+
+                        boolean differenceBetweenLevels = Math.abs(level - nextLevel) <= 3;
+                        boolean isIncreasing = previousLevel <= level && nextLevel > level;
+                        boolean isDecreasing = previousLevel >= level && nextLevel < level;
+
+                        if ((isIncreasing || isDecreasing) && differenceBetweenLevels) {
+                          System.out.println("level = " + level);
+                          System.out.println("oi");
+                          return 1;
+                        }
+
+                        if (unsafetyLevel.isEmpty() || unsafetyLevel.size() == 1) {
+                          unsafetyLevel.add(level);
+                        }
+
+                        System.out.println("level = " + level);
+                        System.out.println("unsafety = " + unsafetyLevel);
+
+                        if (unsafetyLevel.size() == 1) {
+                          boolean differenceBetweenLevels1 = Math.abs(previousLevel - nextLevel) <= 3;
+                          System.out.println(previousLevel + " - " + nextLevel + " = " + differenceBetweenLevels1);
+                          if (differenceBetweenLevels1 && !nextLevel.equals(previousLevel)) {
+                            System.out.println("oi");
+                            return 1;
+                          }
+
+                        }
+                        System.out.println("tchau");
+                        return 0;
+                      })
+                      .sum();
+
+                  return unsafetyLevel.isEmpty() && safetyReport == reportLevels.length - 1 ? 1 : 0;
+                }
+            ).sum()
+        ).sum();
   }
 
   private static int firstChallengePart() {
@@ -29,10 +84,10 @@ public class Day2 {
                         Integer nextLevel = reportLevels[indexLevel + 1];
 
                         boolean differenceBetweenLevels = Math.abs(level - nextLevel) <= 3;
-                        boolean isIncresing = previousLevel <= level && nextLevel > level;
-                        boolean isDecresing = previousLevel >= level && nextLevel < level;
+                        boolean isIncreasing = previousLevel <= level && nextLevel > level;
+                        boolean isDecreasing = previousLevel >= level && nextLevel < level;
 
-                        return (isIncresing || isDecresing) && differenceBetweenLevels ? 1 : 0;
+                        return (isIncreasing || isDecreasing) && differenceBetweenLevels ? 1 : 0;
                       })
                       .sum();
 
