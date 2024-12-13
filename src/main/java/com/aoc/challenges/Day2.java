@@ -17,8 +17,6 @@ public class Day2 {
   }
 
   private static int secondChallengePart() {
-
-
     return readFile()
         .stream()
         .mapToInt(report -> Arrays
@@ -27,44 +25,70 @@ public class Day2 {
                   System.out.println(Arrays.toString(reportLevels));
                   List<Integer> unsafetyLevel = new ArrayList<>();
                   int safetyReport = IntStream
-                      .range(0, reportLevels.length - 1)
+                      .range(0, reportLevels.length)
                       .map(indexLevel -> {
+                        System.out.println("--------------INICIO-------------------");
+                        Integer firstLevel = reportLevels[0];
                         Integer level = reportLevels[indexLevel];
                         Integer previousLevel = indexLevel == 0 ? level : reportLevels[indexLevel - 1];
-                        Integer nextLevel = reportLevels[indexLevel + 1];
+                        Integer nextLevel = indexLevel == reportLevels.length - 1 ? 0 : reportLevels[indexLevel + 1];
+                        System.out.println("level: " + level);
 
-                        boolean differenceBetweenLevels = Math.abs(level - nextLevel) <= 3;
-                        boolean isIncreasing = previousLevel <= level && nextLevel > level;
-                        boolean isDecreasing = previousLevel >= level && nextLevel < level;
+                        if (unsafetyLevel.size() < 2) {
+                          System.out.println("menos de dois erros");
 
-                        if ((isIncreasing || isDecreasing) && differenceBetweenLevels) {
-                          System.out.println("level = " + level);
-                          System.out.println("oi");
-                          return 1;
-                        }
+                          if (indexLevel == 0) {
+                            System.out.println("primeiro level");
+                            if (differenceBetweenLevels(level, nextLevel)) {
+                              return 1;
+                            }
 
-                        if (unsafetyLevel.isEmpty() || unsafetyLevel.size() == 1) {
-                          unsafetyLevel.add(level);
-                        }
+                            unsafetyLevel.add(level);
+                          }
 
-                        System.out.println("level = " + level);
-                        System.out.println("unsafety = " + unsafetyLevel);
+                          if (!unsafetyLevel.isEmpty() && firstLevel.equals(unsafetyLevel.get(0))) {
+                            System.out.println("segundo level com erro no primeiro level");
+                            if (differenceBetweenLevels(level, nextLevel)) {
+                              return 1;
+                            }
 
-                        if (unsafetyLevel.size() == 1) {
-                          boolean differenceBetweenLevels1 = Math.abs(previousLevel - nextLevel) <= 3;
-                          System.out.println(previousLevel + " - " + nextLevel + " = " + differenceBetweenLevels1);
-                          if (differenceBetweenLevels1 && !nextLevel.equals(previousLevel)) {
-                            System.out.println("oi");
+                            unsafetyLevel.add(level);
+                            return 0;
+                          }
+
+                          if (unsafetyLevel.contains(previousLevel)) {
+                            System.out.println("level anterior com erro");
+                            Integer prePreviousLevel = reportLevels[indexLevel - 2];
+
+                            if (differenceBetweenLevels(level, nextLevel) && isIncreasingOrDecreasingBothLevels(prePreviousLevel, level, nextLevel)) {
+                              return 1;
+                            }
+
+                            unsafetyLevel.add(level);
+                            return 0;
+                          }
+
+                          if (indexLevel == reportLevels.length - 1 && differenceBetweenLevels(level, previousLevel) && isIncreasingOrDecreasingNextLevel(level, nextLevel)) {
+                            System.out.println("level penultimo");
                             return 1;
                           }
 
+                          if (differenceBetweenLevels(level, nextLevel) && isIncreasingOrDecreasingBothLevels(previousLevel, level, nextLevel)) {
+                            System.out.println("level normal");
+                            return 1;
+                          }
+
+                          System.out.println("level com erro");
+                          unsafetyLevel.add(level);
+                          return 0;
                         }
-                        System.out.println("tchau");
+
+                        System.out.println(unsafetyLevel);
                         return 0;
                       })
                       .sum();
-
-                  return unsafetyLevel.isEmpty() && safetyReport == reportLevels.length - 1 ? 1 : 0;
+                  System.out.println(safetyReport);
+                  return safetyReport == reportLevels.length - 1 ? 1 : 0;
                 }
             ).sum()
         ).sum();
@@ -122,6 +146,31 @@ public class Day2 {
     }
 
     return list;
+  }
+
+  private static boolean differenceBetweenLevels(Integer level, Integer nextLevel) {
+    return Math.abs(level - nextLevel) <= 3;
+  }
+
+  private static boolean isIncreasingOrDecreasingBothLevels(Integer previousLevel, Integer level, Integer nextLevel) {
+    boolean isIncreasing = previousLevel < level && nextLevel > level;
+    boolean isDecreasing = previousLevel > level && nextLevel < level;
+
+    // System.out.println("previousLevel = " + previousLevel);
+    // System.out.println("level = " + level);
+    // System.out.println("nextLevel = " + nextLevel);
+    // System.out.println("previousLevel < level = " + (previousLevel < level));
+    // System.out.println("nextLevel > level = " + (nextLevel > level));
+    // System.out.println("isIncreasing = " + isIncreasing);
+    // System.out.println("isDecreasing = " + isDecreasing);
+
+    return isIncreasing || isDecreasing;
+  }
+
+  private static boolean isIncreasingOrDecreasingNextLevel(Integer level, Integer nextLevel) {
+    boolean isIncreasing = nextLevel > level;
+    boolean isDecreasing = nextLevel < level;
+    return isIncreasing || isDecreasing;
   }
 
 }
