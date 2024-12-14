@@ -39,14 +39,14 @@ public class Day2 {
 
                           if (indexLevel == 0) {
                             System.out.println("primeiro level");
-                            if (differenceBetweenLevels(level, nextLevel)) {
+                            if (differenceBetweenLevels(level, nextLevel) && !level.equals(nextLevel)) {
                               return 1;
                             }
 
                             unsafetyLevel.add(level);
                           }
 
-                          if (!unsafetyLevel.isEmpty() && firstLevel.equals(unsafetyLevel.get(0))) {
+                          if (!unsafetyLevel.isEmpty() && firstLevel.equals(unsafetyLevel.getFirst())) {
                             System.out.println("segundo level com erro no primeiro level");
                             if (differenceBetweenLevels(level, nextLevel)) {
                               return 1;
@@ -60,17 +60,17 @@ public class Day2 {
                             System.out.println("level anterior com erro");
                             Integer prePreviousLevel = reportLevels[indexLevel - 2];
 
+                            if (indexLevel == reportLevels.length - 1 && differenceBetweenLevels(level, prePreviousLevel) && isIncreasingOrDecreasingPreviousLevel(level, prePreviousLevel)) {
+                              System.out.println("último level");
+                              return 1;
+                            }
+
                             if (differenceBetweenLevels(level, nextLevel) && isIncreasingOrDecreasingBothLevels(prePreviousLevel, level, nextLevel)) {
                               return 1;
                             }
 
                             unsafetyLevel.add(level);
                             return 0;
-                          }
-
-                          if (indexLevel == reportLevels.length - 1 && differenceBetweenLevels(level, previousLevel) && isIncreasingOrDecreasingNextLevel(level, nextLevel)) {
-                            System.out.println("level penultimo");
-                            return 1;
                           }
 
                           if (differenceBetweenLevels(level, nextLevel) && isIncreasingOrDecreasingBothLevels(previousLevel, level, nextLevel)) {
@@ -88,6 +88,9 @@ public class Day2 {
                       })
                       .sum();
                   System.out.println(safetyReport);
+                  if (safetyReport != reportLevels.length - 1) {
+                    System.out.println("report com insucesso = " + Arrays.toString(reportLevels));
+                  }
                   return safetyReport == reportLevels.length - 1 ? 1 : 0;
                 }
             ).sum()
@@ -156,13 +159,9 @@ public class Day2 {
     boolean isIncreasing = previousLevel < level && nextLevel > level;
     boolean isDecreasing = previousLevel > level && nextLevel < level;
 
-    // System.out.println("previousLevel = " + previousLevel);
-    // System.out.println("level = " + level);
-    // System.out.println("nextLevel = " + nextLevel);
-    // System.out.println("previousLevel < level = " + (previousLevel < level));
-    // System.out.println("nextLevel > level = " + (nextLevel > level));
-    // System.out.println("isIncreasing = " + isIncreasing);
-    // System.out.println("isDecreasing = " + isDecreasing);
+    System.out.println("previousLevel = " + previousLevel);
+    System.out.println("level = " + level);
+    System.out.println("nextLevel = " + nextLevel);
 
     return isIncreasing || isDecreasing;
   }
@@ -170,6 +169,17 @@ public class Day2 {
   private static boolean isIncreasingOrDecreasingNextLevel(Integer level, Integer nextLevel) {
     boolean isIncreasing = nextLevel > level;
     boolean isDecreasing = nextLevel < level;
+
+    return isIncreasing || isDecreasing;
+  }
+
+  private static boolean isIncreasingOrDecreasingPreviousLevel(Integer level, Integer previousLevel) {
+    System.out.println("previousLevel = " + previousLevel);
+    System.out.println("level = " + level);
+
+    boolean isIncreasing = previousLevel < level;
+    boolean isDecreasing = previousLevel > level;
+
     return isIncreasing || isDecreasing;
   }
 
